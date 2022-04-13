@@ -25,8 +25,11 @@ class PerceptronModel(object):
         Inputs:
             x: a node with shape (1 x dimensions)
         Returns: a node containing a single number (the score)
+
+        Implement the run(self, x) method. This should compute the dot product of the stored weight vector and the given input returning an nn.DotProduct object.
         """
         "*** YOUR CODE HERE ***"
+        return nn.DotProduct(x, self.w)
 
     def get_prediction(self, x):
         """
