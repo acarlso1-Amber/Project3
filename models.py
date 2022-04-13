@@ -38,8 +38,8 @@ class PerceptronModel(object):
         Returns: 1 or -1
         """
         "*** YOUR CODE HERE ***"
-        dot = nn.as_scalar(nn.DotProduct(self.w, x))
-        if dot > 0:
+        dot = nn.as_scalar(self.run(x))
+        if dot >= 0:
             return 1
         else:
             return -1
