@@ -47,9 +47,34 @@ class PerceptronModel(object):
     def train(self, dataset):
         """
         Train the perceptron until convergence.
+        weights ← weights + direction ⋅ multiplier
+        
+    
+        Write the train(self) method. This should repeatedly loop over the data set and make updates on examples that are misclassified. Use the update method of the nn.Parameter class to update the weights. When an entire pass over the data set is completed without making any mistakes, 100% training accuracy has been achieved, and training can terminate.
+        
+        
         """
         "*** YOUR CODE HERE ***"
+        batchsize = 1
+        mismatch = True
+        # multiplier = 1
+        while mismatch: 
+            for x, y in dataset.iterate_once(batchsize): 
+                mismatch = False
+                # m = nn.Parameter(2,1)
+                # # b = nn.Parameter(1,1)
 
+                # xm = nn.Linear(x, m) 
+                # predicted_y = nn.AddBias(xm, y) 
+
+                # loss = nn.SquareLoss(predicted_y, y)
+                # grad_wrt_m, grad_wrt_b = nn.gradients(loss, [self.w, y])
+
+                if (self.get_prediction(x) != nn.as_scalar(y)):
+                    self.w.update(x, nn.as_scalar(y))
+                    # self.w.update(grad_wrt_m, nn.as_scalar(y))
+                    mismatch = True
+            
 class RegressionModel(object):
     """
     A neural network model for approximating a function that maps from real
