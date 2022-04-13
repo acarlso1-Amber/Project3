@@ -1,3 +1,4 @@
+from tkinter.simpledialog import askfloat
 import nn
 
 class PerceptronModel(object):
@@ -49,6 +50,23 @@ class PerceptronModel(object):
         Train the perceptron until convergence.
         """
         "*** YOUR CODE HERE ***"
+        batch_size = 1
+        stop = False
+        while not stop:
+            tempStop = True
+            wrongs = 0
+            for x, y in dataset.iterate_once(batch_size):
+                temp = self.get_prediction(x)
+                if float(temp) != nn.as_scalar(y):
+                    tempStop = False
+                    self.w.update(x, nn.as_scalar(y))
+                    wrongs += 1
+                else:
+                    self.w.update(x, nn.as_scalar(y))
+            print("wrong answers: ", wrongs)
+            stop = tempStop
+
+
 
 class RegressionModel(object):
     """
