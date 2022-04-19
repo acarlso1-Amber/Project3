@@ -1,4 +1,5 @@
 import nn
+import numpy as np
 
 class PerceptronModel(object):
     def __init__(self, dimensions):
@@ -29,7 +30,7 @@ class PerceptronModel(object):
         Implement the run(self, x) method. This should compute the dot product of the stored weight vector and the given input returning an nn.DotProduct object.
         """
         "*** YOUR CODE HERE ***"
-        return nn.DotProduct(x, self.w)
+        return nn.DotProduct(self.w, x)
 
     def get_prediction(self, x):
         """
@@ -61,19 +62,23 @@ class PerceptronModel(object):
         while mismatch: 
             for x, y in dataset.iterate_once(batchsize): 
                 mismatch = False
-                # m = nn.Parameter(2,1)
-                # # b = nn.Parameter(1,1)
+                m = nn.Parameter(2,1)
+                # b = nn.Parameter(1,1)
 
-                # xm = nn.Linear(x, m) 
-                # predicted_y = nn.AddBias(xm, y) 
+                xm = nn.Linear(x, m) 
+                predicted_y = nn.AddBias(xm, y) 
 
-                # loss = nn.SquareLoss(predicted_y, y)
-                # grad_wrt_m, grad_wrt_b = nn.gradients(loss, [self.w, y])
+                loss = nn.SquareLoss(predicted_y, y)
+                grad_wrt_m, grad_wrt_b = nn.gradients(loss, [self.w, y])
 
-                if (self.get_prediction(x) != nn.as_scalar(y)):
-                    self.w.update(x, nn.as_scalar(y))
+                predicted_y = self.get_prediction(nn.AddBias(xm, y))
+                node = nn.as_scalar(y)
+                #if (self.get_prediction(x) != node):
+                if (predicted_y != node):
                     # self.w.update(grad_wrt_m, nn.as_scalar(y))
                     mismatch = True
+                    self.w.update(x, node)
+                
             
 class RegressionModel(object):
     """
