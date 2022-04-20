@@ -1,5 +1,6 @@
 from tkinter.simpledialog import askfloat
 import nn
+import numpy as np
 
 class PerceptronModel(object):
     def __init__(self, dimensions):
@@ -10,6 +11,9 @@ class PerceptronModel(object):
         class (+1) or not (-1). `dimensions` is the dimensionality of the data.
         For example, dimensions=2 would mean that the perceptron must classify
         2D points.
+
+        python3.7 autograder.py -q q1
+
         """
         self.w = nn.Parameter(1, dimensions)
 
@@ -48,25 +52,23 @@ class PerceptronModel(object):
     def train(self, dataset):
         """
         Train the perceptron until convergence.
+        weights ← weights + direction ⋅ multiplier
+        
+    
+        Write the train(self) method. This should repeatedly loop over the data set and make updates on examples that are misclassified. Use the update method of the nn.Parameter class to update the weights. When an entire pass over the data set is completed without making any mistakes, 100% training accuracy has been achieved, and training can terminate.
+        
+        
         """
         "*** YOUR CODE HERE ***"
-        batch_size = 1
-        stop = False
-        while not stop:
-            tempStop = True
-            wrongs = 0
-            for x, y in dataset.iterate_once(batch_size):
-                temp = self.get_prediction(x)
-                if float(temp) != nn.as_scalar(y):
-                    tempStop = False
-                    self.w.update(x, nn.as_scalar(y))
-                    wrongs += 1
-                else:
-                    self.w.update(x, nn.as_scalar(y))
-            print("wrong answers: ", wrongs)
-            stop = tempStop
-
-
+        batchsize = 1
+        mismatch = True
+        while mismatch: 
+            mismatch = False
+            for x, y in dataset.iterate_once(batchsize): 
+                node = nn.as_scalar(y)
+                if (self.get_prediction(x) != node):
+                    mismatch = True
+                    self.w.update(x, node)
 
 class RegressionModel(object):
     """
