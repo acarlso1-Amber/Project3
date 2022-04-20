@@ -1,3 +1,4 @@
+from tkinter.simpledialog import askfloat
 import nn
 import numpy as np
 
@@ -69,7 +70,6 @@ class PerceptronModel(object):
                     mismatch = True
                     self.w.update(x, node)
 
-            
 class RegressionModel(object):
     """
     A neural network model for approximating a function that maps from real
