@@ -10,6 +10,9 @@ class PerceptronModel(object):
         class (+1) or not (-1). `dimensions` is the dimensionality of the data.
         For example, dimensions=2 would mean that the perceptron must classify
         2D points.
+
+        python3.7 autograder.py -q q1
+
         """
         self.w = nn.Parameter(1, dimensions)
 
@@ -30,7 +33,7 @@ class PerceptronModel(object):
         Implement the run(self, x) method. This should compute the dot product of the stored weight vector and the given input returning an nn.DotProduct object.
         """
         "*** YOUR CODE HERE ***"
-        return nn.DotProduct(self.w, x)
+        return nn.DotProduct(x, self.w)
 
     def get_prediction(self, x):
         """
@@ -58,27 +61,14 @@ class PerceptronModel(object):
         "*** YOUR CODE HERE ***"
         batchsize = 1
         mismatch = True
-        # multiplier = 1
         while mismatch: 
+            mismatch = False
             for x, y in dataset.iterate_once(batchsize): 
-                mismatch = False
-                m = nn.Parameter(2,1)
-                # b = nn.Parameter(1,1)
-
-                xm = nn.Linear(x, m) 
-                predicted_y = nn.AddBias(xm, y) 
-
-                loss = nn.SquareLoss(predicted_y, y)
-                grad_wrt_m, grad_wrt_b = nn.gradients(loss, [self.w, y])
-
-                predicted_y = self.get_prediction(nn.AddBias(xm, y))
                 node = nn.as_scalar(y)
-                #if (self.get_prediction(x) != node):
-                if (predicted_y != node):
-                    # self.w.update(grad_wrt_m, nn.as_scalar(y))
+                if (self.get_prediction(x) != node):
                     mismatch = True
                     self.w.update(x, node)
-                
+
             
 class RegressionModel(object):
     """
