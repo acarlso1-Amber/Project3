@@ -70,15 +70,21 @@ class PerceptronModel(object):
                     mismatch = True
                     self.w.update(x, node)
 
+
 class RegressionModel(object):
     """
     A neural network model for approximating a function that maps from real
     numbers to real numbers. The network should be sufficiently large to be able
     to approximate sin(x) on the interval [-2pi, 2pi] to reasonable precision.
+    python3.7 autograder.py -q q2
     """
+
+
     def __init__(self):
         # Initialize your model parameters here
         "*** YOUR CODE HERE ***"
+        dimensions=1 #TODO hmmmmmmmmmmmmmmmm
+        self.w = nn.Parameter(1, dimensions)
 
     def run(self, x):
         """
@@ -90,6 +96,7 @@ class RegressionModel(object):
             A node with shape (batch_size x 1) containing predicted y-values
         """
         "*** YOUR CODE HERE ***"
+        return nn.DotProduct(x,self.w)
 
     def get_loss(self, x, y):
         """
@@ -102,12 +109,24 @@ class RegressionModel(object):
         Returns: a loss node
         """
         "*** YOUR CODE HERE ***"
+        return nn.SquareLoss(x,y) #TODO or should this be SoftMaxLoss? Or y,x?
 
     def train(self, dataset):
         """
         Trains the model.
         """
         "*** YOUR CODE HERE ***"
+        batchsize = 1
+        mismatch = True
+        while mismatch: 
+            mismatch = False
+            for x, y in dataset.iterate_once(batchsize): 
+                node = nn.as_scalar(y)
+                loss = self.get_loss(x,y)
+                gradients = nn.gradients(loss,dataset)
+                if (self.get_prediction(x) != node): #TODO change self.getPrediction
+                    mismatch = True
+                    self.w.update(x, node)
 
 class DigitClassificationModel(object):
     """
