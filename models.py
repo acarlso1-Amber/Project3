@@ -126,6 +126,7 @@ class DigitClassificationModel(object):
     def __init__(self):
         # Initialize your model parameters here
         "*** YOUR CODE HERE ***"
+        self.w = nn.Parameter(1, 10)
 
     def run(self, x):
         """
@@ -142,6 +143,8 @@ class DigitClassificationModel(object):
                 (also called logits)
         """
         "*** YOUR CODE HERE ***"
+        batch_size = 1
+        
 
     def get_loss(self, x, y):
         """
@@ -157,12 +160,14 @@ class DigitClassificationModel(object):
         Returns: a loss node
         """
         "*** YOUR CODE HERE ***"
+        return nn.SoftmaxLoss(self.run(x), y)
 
     def train(self, dataset):
         """
         Trains the model.
         """
         "*** YOUR CODE HERE ***"
+        
 
 class LanguageIDModel(object):
     """
