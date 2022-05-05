@@ -70,15 +70,31 @@ class PerceptronModel(object):
                     mismatch = True
                     self.w.update(x, node)
 
+
 class RegressionModel(object):
     """
     A neural network model for approximating a function that maps from real
     numbers to real numbers. The network should be sufficiently large to be able
     to approximate sin(x) on the interval [-2pi, 2pi] to reasonable precision.
+    python3.7 autograder.py -q q2
     """
+
+
     def __init__(self):
         # Initialize your model parameters here
         "*** YOUR CODE HERE ***"
+        self.learningRate=0.05
+
+        self.w1 = nn.Parameter(1,80)
+        self.b1 = nn.Parameter(1,80)
+
+        self.w2 = nn.Parameter(80,40)
+        self.b2 = nn.Parameter(1,40)
+
+        self.w3 = nn.Parameter(40,1)
+        self.b3 = nn.Parameter(1,1)
+
+        self.parameters=[self.w1,self.b1,self.w2,self.b2,self.w3,self.b3]
 
     def run(self, x):
         """
@@ -90,6 +106,11 @@ class RegressionModel(object):
             A node with shape (batch_size x 1) containing predicted y-values
         """
         "*** YOUR CODE HERE ***"
+        layer_01 = nn.AddBias(nn.Linear(x                ,self.w1),self.b1)
+        layer_02 = nn.AddBias(nn.Linear(nn.ReLU(layer_01),self.w2),self.b2)
+        layer_03 = nn.AddBias(nn.Linear(nn.ReLU(layer_02),self.w3),self.b3)
+
+        return layer_03
 
     def get_loss(self, x, y):
         """
@@ -102,6 +123,7 @@ class RegressionModel(object):
         Returns: a loss node
         """
         "*** YOUR CODE HERE ***"
+        return nn.SquareLoss(self.run(x),y) #TODO or should this be SoftMaxLoss? Or y,x?
 
     def train(self, dataset):
         """
@@ -109,6 +131,34 @@ class RegressionModel(object):
         """
         "*** YOUR CODE HERE ***"
 
+        batchSize=25
+        loss=float('inf')
+        minLoss=0.005
+        
+        print(dataset)
+        while loss>=minLoss:
+            for x, y in dataset.iterate_once(batchSize):
+                loss=self.get_loss(x,y)
+                gradiants = nn.gradients(loss,self.parameters)
+                loss=nn.as_scalar(loss)
+                for i in range(len(self.parameters)):
+                    self.parameters[i].update(gradiants[i],-self.learningRate)
+
+
+        """
+        #TODO: Copied from perceptron model
+        batchsize = 1
+        mismatch = True
+        while mismatch: 
+            mismatch = False
+            for x, y in dataset.iterate_once(batchsize): 
+                node = nn.as_scalar(y)
+                loss = self.get_loss(x,y)
+                gradients = nn.gradients(loss,dataset)
+                if (self.get_prediction(x) != node): #TODO change self.getPrediction
+                    mismatch = True
+                    self.w.update(x, node)
+        """
 class DigitClassificationModel(object):
     """
     A model for handwritten digit classification using the MNIST dataset.
