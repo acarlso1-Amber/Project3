@@ -123,7 +123,7 @@ class RegressionModel(object):
         Returns: a loss node
         """
         "*** YOUR CODE HERE ***"
-        return nn.SquareLoss(self.run(x),y) #TODO or should this be SoftMaxLoss? Or y,x?
+        return nn.SquareLoss(self.run(x),y)
 
     def train(self, dataset):
         """
@@ -135,7 +135,6 @@ class RegressionModel(object):
         loss=float('inf')
         minLoss=0.005
         
-        print(dataset)
         while loss>=minLoss:
             for x, y in dataset.iterate_once(batchSize):
                 loss=self.get_loss(x,y)
@@ -172,10 +171,41 @@ class DigitClassificationModel(object):
     (See RegressionModel for more information about the APIs of different
     methods here. We recommend that you implement the RegressionModel before
     working on this part of the project.)
+    python3.7 autograder.py -q q3
     """
     def __init__(self):
         # Initialize your model parameters here
         "*** YOUR CODE HERE ***"
+        self.learningRate=0.1
+
+
+        """
+        self.w1 = nn.Parameter(1,80)
+        self.b1 = nn.Parameter(1,80)
+
+        self.w2 = nn.Parameter(80,40)
+        self.b2 = nn.Parameter(1,40)
+
+        self.w3 = nn.Parameter(40,1)
+        self.b3 = nn.Parameter(1,1)"""
+        l1start=784
+        l2start=300
+        l3start=150
+        l4start=75
+
+        self.w1 = nn.Parameter(l1start,l2start)
+        self.b1 = nn.Parameter(1,      l2start)
+
+        self.w2 = nn.Parameter(l2start,l3start)
+        self.b2 = nn.Parameter(1,      l3start)
+
+        self.w3 = nn.Parameter(l3start,l4start)
+        self.b3 = nn.Parameter(1,      l4start)
+
+        self.w4 = nn.Parameter(l4start,10)
+        self.b4 = nn.Parameter(1,      10)
+
+        self.parameters=[self.w1,self.b1,self.w2,self.b2,self.w3,self.b3,self.w4,self.b4]
 
     def run(self, x):
         """
@@ -192,6 +222,12 @@ class DigitClassificationModel(object):
                 (also called logits)
         """
         "*** YOUR CODE HERE ***"
+        layer_01 = nn.AddBias(nn.Linear(x                ,self.w1),self.b1)
+        layer_02 = nn.AddBias(nn.Linear(nn.ReLU(layer_01),self.w2),self.b2)
+        layer_03 = nn.AddBias(nn.Linear(nn.ReLU(layer_02),self.w3),self.b3)
+        layer_04 = nn.AddBias(nn.Linear(nn.ReLU(layer_03),self.w4),self.b4)
+
+        return layer_04
 
     def get_loss(self, x, y):
         """
@@ -207,12 +243,25 @@ class DigitClassificationModel(object):
         Returns: a loss node
         """
         "*** YOUR CODE HERE ***"
+        return nn.SquareLoss(self.run(x),y)
 
     def train(self, dataset):
         """
         Trains the model.
         """
         "*** YOUR CODE HERE ***"
+        #dataset.get_validation_accuracy()
+        batchSize=100
+        #loss=float('inf')
+        #minLoss=0.005
+        
+        while dataset.get_validation_accuracy()<0.975:
+            for x, y in dataset.iterate_once(batchSize):
+                loss=self.get_loss(x,y)
+                gradiants = nn.gradients(loss,self.parameters)
+                #loss=nn.as_scalar(loss)
+                for i in range(len(self.parameters)):
+                    self.parameters[i].update(gradiants[i],-self.learningRate)
 
 class LanguageIDModel(object):
     """
@@ -279,6 +328,7 @@ class LanguageIDModel(object):
         Returns: a loss node
         """
         "*** YOUR CODE HERE ***"
+        return nn.SquareLoss(self.run(xs),y)
 
     def train(self, dataset):
         """
