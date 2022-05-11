@@ -281,21 +281,22 @@ class LanguageIDModel(object):
 
         # Initialize your model parameters here
         "*** YOUR CODE HERE ***"
-        l1start=self.num_chars
-        l2start=236
-        l3start=l2start
-        l4start=5
 
-        self.w1 = nn.Parameter(l1start,l2start)
-        self.b1 = nn.Parameter(1,      l2start)
+        #l1start=self.num_chars
+        #l2start=236
+        #l3start=l2start
+        #l4start=5
+        self.learningRate = 0.01
+        self.w1 = nn.Parameter(47,236)
+        self.b1 = nn.Parameter(1,236)
 
-        self.hw = nn.Parameter(l3start, l3start)
+        self.hw = nn.Parameter(236,236)
 
-        self.w2 = nn.Parameter(l1start,l3start)
-        self.b2 = nn.Parameter(1,      l3start)
+        self.w2 = nn.Parameter(236,236)
+        self.b2 = nn.Parameter(1,236)
 
-        self.w3 = nn.Parameter(l2start,l4start)
-        self.b3 = nn.Parameter(1,      l4start)
+        self.w3 = nn.Parameter(236,5)
+        self.b3 = nn.Parameter(1,5)
 
         self.parameters=[self.w1,self.b1,self.w2,self.b2,self.w3,self.b3,self.hw]
 
@@ -329,24 +330,33 @@ class LanguageIDModel(object):
                 (also called logits)
         """
         "*** YOUR CODE HERE ***"
-        h = 0
+        hidden = 0
         for i in range(0, len(xs)):
             x = xs[i]
             if i == 0:
-                layer_01 = nn.AddBias(nn.Linear(x                ,self.w1),self.b1)
-                layer_02 = nn.AddBias(nn.Linear(nn.ReLU(layer_01),self.w2),self.b2)
-                layer_03 = nn.AddBias(nn.Linear(nn.ReLU(layer_02),self.w3),self.b3)
-                layer_04 = nn.AddBias(nn.Linear(nn.ReLU(layer_03),self.w4),self.b4)
-                h = layer_04
+                # layer_01 = nn.AddBias(nn.Linear(x                ,self.w1),self.b1)
+                # layer_02 = nn.AddBias(nn.Linear(nn.ReLU(layer_01),self.w2),self.b2)
+                # layer_03 = nn.AddBias(nn.Linear(nn.ReLU(layer_02),self.w3),self.b3)
+                # layer_04 = nn.AddBias(nn.Linear(nn.ReLU(layer_03),self.w4),self.b4)
+                # h = layer_04
+                #z, activation, hidden
+                # z = nn.Linear(x, self.w)
+                # activation
+                hidden =  nn.ReLU(nn.AddBias(nn.Linear(x,self.w1),self.b1))
             else:
-                layer_01 = nn.AddBias(nn.Add(nn.Linear(x, self.w1), nn.Linear(h, self.w1)),self.b1)
-                layer_02 = nn.AddBias(nn.Add(nn.Linear(x, self.w2), nn.Linear(h, self.w2)),self.b2)
-                layer_03 = nn.AddBias(nn.Add(nn.Linear(x, self.w3), nn.Linear(h, self.w3)),self.b3)
-                layer_04 = nn.AddBias(nn.Add(nn.Linear(x, self.w4), nn.Linear(h, self.w4)),self.b4)
-                print("placeholder")
+                # layer_01 = nn.AddBias(nn.Add(nn.Linear(x, self.w1), nn.Linear(h, self.w1)),self.b1)
+                # layer_02 = nn.AddBias(nn.Add(nn.Linear(x, self.w2), nn.Linear(h, self.w2)),self.b2)
+                # layer_03 = nn.AddBias(nn.Add(nn.Linear(x, self.w3), nn.Linear(h, self.w3)),self.b3)
+                # layer_04 = nn.AddBias(nn.Add(nn.Linear(x, self.w4), nn.Linear(h, self.w4)),self.b4)
+                # print("placeholder")
+                #z, hidden
+                hidden = nn.ReLU(nn.AddBias(nn.Add(nn.Linear(x, self.w1), nn.Linear(hidden, self.hw)),self.b2))
+        hidden = nn.AddBias(nn.Linear(hidden, self.w3), self.b3)
+        return hidden
+                
 
     def get_loss(self, xs, y):
-        """
+        """,
         Computes the loss for a batch of examples.
 
         The correct labels `y` are represented as a node with shape
