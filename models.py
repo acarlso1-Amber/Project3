@@ -281,6 +281,23 @@ class LanguageIDModel(object):
 
         # Initialize your model parameters here
         "*** YOUR CODE HERE ***"
+        l1start=self.num_chars
+        l2start=236
+        l3start=l2start
+        l4start=5
+
+        self.w1 = nn.Parameter(l1start,l2start)
+        self.b1 = nn.Parameter(1,      l2start)
+
+        self.hw = nn.Parameter(l3start, l3start)
+
+        self.w2 = nn.Parameter(l1start,l3start)
+        self.b2 = nn.Parameter(1,      l3start)
+
+        self.w3 = nn.Parameter(l2start,l4start)
+        self.b3 = nn.Parameter(1,      l4start)
+
+        self.parameters=[self.w1,self.b1,self.w2,self.b2,self.w3,self.b3,self.hw]
 
     def run(self, xs):
         """
@@ -312,6 +329,21 @@ class LanguageIDModel(object):
                 (also called logits)
         """
         "*** YOUR CODE HERE ***"
+        h = 0
+        for i in range(0, len(xs)):
+            x = xs[i]
+            if i == 0:
+                layer_01 = nn.AddBias(nn.Linear(x                ,self.w1),self.b1)
+                layer_02 = nn.AddBias(nn.Linear(nn.ReLU(layer_01),self.w2),self.b2)
+                layer_03 = nn.AddBias(nn.Linear(nn.ReLU(layer_02),self.w3),self.b3)
+                layer_04 = nn.AddBias(nn.Linear(nn.ReLU(layer_03),self.w4),self.b4)
+                h = layer_04
+            else:
+                layer_01 = nn.AddBias(nn.Add(nn.Linear(x, self.w1), nn.Linear(h, self.w1)),self.b1)
+                layer_02 = nn.AddBias(nn.Add(nn.Linear(x, self.w2), nn.Linear(h, self.w2)),self.b2)
+                layer_03 = nn.AddBias(nn.Add(nn.Linear(x, self.w3), nn.Linear(h, self.w3)),self.b3)
+                layer_04 = nn.AddBias(nn.Add(nn.Linear(x, self.w4), nn.Linear(h, self.w4)),self.b4)
+                print("placeholder")
 
     def get_loss(self, xs, y):
         """
@@ -335,3 +367,10 @@ class LanguageIDModel(object):
         Trains the model.
         """
         "*** YOUR CODE HERE ***"
+        batchSize=100
+        while dataset.get_validation_accuracy()<0.815:
+            for x, y in dataset.iterate_once(batchSize):
+                loss=self.get_loss(x,y)
+                gradiants = nn.gradients(loss,self.parameters)
+                for i in range(len(self.parameters)):
+                    self.parameters[i].update(gradiants[i],-self.learningRate)
