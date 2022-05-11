@@ -378,7 +378,7 @@ class LanguageIDModel(object):
         """
         "*** YOUR CODE HERE ***"
         batchSize=100
-        while dataset.get_validation_accuracy()<0.815:
+        while dataset.get_validation_accuracy()<0.85:
             for x, y in dataset.iterate_once(batchSize):
                 loss=self.get_loss(x,y)
                 gradiants = nn.gradients(loss,self.parameters)
